@@ -22,11 +22,11 @@
                         <div class="col-2 text-center">
                             <img src="{{ asset(question.askedBy.avatarUrl) }}" width="100" height="100"  alt="Tisha avatar">
                             <div class="vote-arrows vote-arrows-alt flex-fill pt-2" style="min-width: 90px;">
-                                <span>{{ question.votesString}} votes</span>
+                                <span>{{ question.votesString }} votes</span>
                             </div>
                         </div>
                         <div class="col">
-                            <a class="q-title" href="{{ path('app_question_show', { slug: question.slug }) }}"><h2>{{ question.name }}</h2></a>
+                            <a class="q-title" href="{{ path('app_question_show', {slug: question.slug}) }}"><h2>{{ question.name }}</h2></a>
                             <div class="q-display p-3">
                                 <i class="fa fa-quote-left mr-3"></i>
                                 <p class="d-inline">{{ question.question|parse_markdown }}</p>
@@ -35,7 +35,7 @@
                         </div>
                     </div>
                 </div>
-                <a class="answer-link" href="{{ path('app_question_show', { slug: question.slug }) }}" style="color: #fff;">
+                <a class="answer-link" href="{{ path('app_question_show', {slug: question.slug}) }}" style="color: #fff;">
                     <p class="q-display-response text-center p-3">
                         <i class="fa fa-magic magic-wand"></i> {{ question.answers|length }} answers
                     </p>

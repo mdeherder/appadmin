@@ -30,6 +30,11 @@
 
                 <div class="collapse navbar-collapse" id="navbar-collapsable">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <li class="nav-item">
+                                <a href="{{ path('admin') }}" class="navlink">Admin</a>
+                            </li>
+                        {% endif %}
                     </ul>
 
                     {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}

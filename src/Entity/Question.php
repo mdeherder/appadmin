@@ -39,7 +39,7 @@ class Question
     #[ORM\Column]
     private int $votes = 0;
 
-    #[ORM\OneToMany('question', Answer::class)]
+    #[ORM\OneToMany('question', Answer::class, orphanRemoval: true)]
     private Collection $answers;
 
     #[ORM\ManyToOne(inversedBy: 'questions')]
@@ -55,6 +55,11 @@ class Question
     public function __construct()
     {
         $this->answers = new ArrayCollection();
+    }
+
+    public function __toString(): string
+    {
+        return $this->getName();
     }
 
     public function getId(): ?int
@@ -131,20 +136,20 @@ class Question
 
     public function upVote(): self
     {
-        $this->votes++;
+        ++$this->votes;
 
         return $this;
     }
 
     public function downVote(): self
     {
-        $this->votes--;
+        --$this->votes;
 
         return $this;
     }
 
     /**
-     * @return Collection|Answer[]
+     * @return Answer[]|Collection
      */
     public function getAnswers(): Collection
     {

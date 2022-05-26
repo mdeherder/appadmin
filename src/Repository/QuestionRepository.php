@@ -8,10 +8,12 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method Question|null find($id, $lockMode = null, $lockVersion = null)
- * @method Question|null findOneBy(array $criteria, array $orderBy = null)
+ * @method null|Question find($id, $lockMode = null, $lockVersion = null)
+ * @method null|Question findOneBy(array $criteria, array $orderBy = null)
  * @method Question[]    findAll()
  * @method Question[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ *
+ * @extends ServiceEntityRepository<Question>
  */
 class QuestionRepository extends ServiceEntityRepository
 {
@@ -20,28 +22,27 @@ class QuestionRepository extends ServiceEntityRepository
         parent::__construct($registry, Question::class);
     }
 
-    public function findLatest(): array
+    public function findLatest(): mixed
     {
         return $this->createQueryBuilder('question')
             ->orderBy('question.createdAt', 'DESC')
             ->setMaxResults(3)
             ->getQuery()
-            ->getResult();
+            ->getResult()
+        ;
     }
 
-    public function findTopVoted(): array
+    public function findTopVoted(): mixed
     {
         return $this->createQueryBuilder('question')
             ->orderBy('question.votes', 'DESC')
             ->setMaxResults(5)
             ->getQuery()
-            ->getResult();
+            ->getResult()
+        ;
     }
 
-     /**
-      * @return Question[] Returns an array of Question objects
-      */
-    public function findAllApprovedOrderedByNewest()
+    public function findAllApprovedOrderedByNewest(): mixed
     {
         return $this->addIsApprovedQueryBuilder()
             ->orderBy('q.createdAt', 'DESC')
@@ -54,7 +55,8 @@ class QuestionRepository extends ServiceEntityRepository
     {
         return $this->getOrCreateQueryBuilder($qb)
             ->andWhere('q.isApproved = :approved')
-            ->setParameter('approved', true);
+            ->setParameter('approved', true)
+        ;
     }
 
     private function getOrCreateQueryBuilder(QueryBuilder $qb = null): QueryBuilder

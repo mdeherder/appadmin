@@ -5,15 +5,11 @@ namespace App\Twig;
 use App\Service\MarkdownHelper;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
-use Twig\TwigFunction;
 
 class MarkdownExtension extends AbstractExtension
 {
-    private $markdownHelper;
-
-    public function __construct(MarkdownHelper $markdownHelper)
+    public function __construct(private MarkdownHelper $markdownHelper)
     {
-        $this->markdownHelper = $markdownHelper;
     }
 
     public function getFilters(): array
@@ -26,7 +22,7 @@ class MarkdownExtension extends AbstractExtension
         ];
     }
 
-    public function parseMarkdown($value)
+    public function parseMarkdown(string $value): string
     {
         return $this->markdownHelper->parse($value);
     }

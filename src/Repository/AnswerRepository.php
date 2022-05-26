@@ -7,10 +7,12 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method Answer|null find($id, $lockMode = null, $lockVersion = null)
- * @method Answer|null findOneBy(array $criteria, array $orderBy = null)
+ * @method null|Answer find($id, $lockMode = null, $lockVersion = null)
+ * @method null|Answer findOneBy(array $criteria, array $orderBy = null)
  * @method Answer[]    findAll()
  * @method Answer[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ *
+ * @extends ServiceEntityRepository<Answer>
  */
 class AnswerRepository extends ServiceEntityRepository
 {

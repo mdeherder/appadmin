@@ -5,13 +5,17 @@ namespace App\Controller\Admin;
 use App\EasyAdmin\VotesField;
 use App\Entity\Question;
 use Doctrine\ORM\QueryBuilder;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
+#[IsGranted('ROLE_MODERATOR')]
 class QuestionCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
@@ -29,6 +33,18 @@ class QuestionCrudController extends AbstractCrudController
         ;
     }
 
+    public function configureActions(Actions $actions): Actions
+    {
+        return parent::configureActions($actions)
+            ->setPermission(Action::INDEX, 'ROLE_MODERATOR')
+            ->setPermission(Action::DETAIL, 'ROLE_MODERATOR')
+            ->setPermission(Action::EDIT, 'ROLE_MODERATOR')
+            ->setPermission(Action::NEW, 'ROLE_SUPER_ADMIN')
+            ->setPermission(Action::DELETE, 'ROLE_SUPER_ADMIN')
+            ->setPermission(Action::BATCH_DELETE, 'ROLE_SUPER_ADMIN')
+        ;
+    }
+
     public function configureFields(string $pageName): iterable
     {
         yield IdField::new('id')->onlyOnIndex();
@@ -42,14 +58,28 @@ class QuestionCrudController extends AbstractCrudController
 
         yield Field::new('name')->setSortable(false);
 
-        yield TextareaField::new('question')->hideOnIndex();
+        yield TextareaField::new('question')
+            ->hideOnIndex()
+            ->setFormTypeOptions([
+                'row_attr' => [
+                    'data-controller' => 'snarkdown',
+                ],
+                'attr' => [
+                    'data-snarkdown-target' => 'input',
+                    'data-action' => 'snarkdown#render',
+                ],
+            ])
+            ->setHelp('Preview:')
+        ;
 
-        yield VotesField::new('votes', '# Votes');
+        yield VotesField::new('votes', '# Votes')
+            ->setPermission('ROLE_SUPER_ADMIN')
+        ;
 
         yield AssociationField::new('askedBy')
             ->autocomplete()
-            ->formatValue(static function ($value, Question $question) {
-                if (!$user = $question->getAskedBy()) {
+            ->formatValue(static function ($value, ?Question $question) {
+                if (!$user = $question?->getAskedBy()) {
                     return null;
                 }
 

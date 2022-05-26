@@ -25,10 +25,11 @@ class TruncateLongTextConfigurator implements FieldConfiguratorInterface
         if (Crud::PAGE_DETAIL === $crud?->getCurrentPage()) {
             return;
         }
-        if (strlen($field->getFormattedValue() <= self::MAX_LENGTH)) {
+        $formattedValue = strval($field->getFormattedValue());
+        if (strlen($formattedValue) <= self::MAX_LENGTH) {
             return;
         }
-        $truncatedValue = u($field->getFormattedValue())
+        $truncatedValue = u($formattedValue)
             ->truncate(self::MAX_LENGTH, '...', false)
         ;
         $field->setFormattedValue($truncatedValue);

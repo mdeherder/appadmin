@@ -6,25 +6,25 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Zenstruck\Foundry\RepositoryProxy;
 use Zenstruck\Foundry\ModelFactory;
 use Zenstruck\Foundry\Proxy;
+use Zenstruck\Foundry\RepositoryProxy;
 
 /**
- * @method static User|Proxy createOne(array $attributes = [])
- * @method static User[]|Proxy[] createMany(int $number, $attributes = [])
- * @method static User|Proxy find($criteria)
- * @method static User|Proxy findOrCreate(array $attributes)
- * @method static User|Proxy first(string $sortedField = 'id')
- * @method static User|Proxy last(string $sortedField = 'id')
- * @method static User|Proxy random(array $attributes = [])
- * @method static User|Proxy randomOrCreate(array $attributes = [])
- * @method static User[]|Proxy[] all()
- * @method static User[]|Proxy[] findBy(array $attributes)
- * @method static User[]|Proxy[] randomSet(int $number, array $attributes = [])
- * @method static User[]|Proxy[] randomRange(int $min, int $max, array $attributes = [])
- * @method static UserRepository|RepositoryProxy repository()
- * @method User|Proxy create($attributes = [])
+ * @method static     User|Proxy createOne(array $attributes = [])
+ * @method static     User[]|Proxy[] createMany(int $number, $attributes = [])
+ * @method static     User|Proxy find($criteria)
+ * @method static     User|Proxy findOrCreate(array $attributes)
+ * @method static     User|Proxy first(string $sortedField = 'id')
+ * @method static     User|Proxy last(string $sortedField = 'id')
+ * @method static     User|Proxy random(array $attributes = [])
+ * @method static     User|Proxy randomOrCreate(array $attributes = [])
+ * @method static     User[]|Proxy[] all()
+ * @method static     User[]|Proxy[] findBy(array $attributes)
+ * @method static     User[]|Proxy[] randomSet(int $number, array $attributes = [])
+ * @method static     User[]|Proxy[] randomRange(int $min, int $max, array $attributes = [])
+ * @method static     UserRepository|RepositoryProxy repository()
+ * @method Proxy|User create($attributes = [])
  */
 final class UserFactory extends ModelFactory
 {
@@ -43,7 +43,7 @@ final class UserFactory extends ModelFactory
         $defaults = $this->getDefaults();
 
         $roles = array_merge($defaults['roles'], [
-            $role
+            $role,
         ]);
 
         return $this->addState([
@@ -51,6 +51,9 @@ final class UserFactory extends ModelFactory
         ]);
     }
 
+    /**
+     * @return array{'email': string, 'roles': array<string>, 'plainPassword': string, 'firstName': string, 'lastName': string, 'avatar': string}
+     */
     protected function getDefaults(): array
     {
         return [
@@ -70,20 +73,22 @@ final class UserFactory extends ModelFactory
     {
         // see https://github.com/zenstruck/foundry#initialization
         return $this
-             ->afterInstantiate(function(User $user) {
-                 $hashedPassword = $this->passwordHasher
-                     ->hashPassword($user, $user->getPlainPassword());
+            ->afterInstantiate(function (User $user) {
+                $hashedPassword = $this->passwordHasher
+                    ->hashPassword($user, $user->getPlainPassword())
+                 ;
 
-                 $user->setPassword($hashedPassword);
+                $user->setPassword($hashedPassword);
 
-                 $fs = new Filesystem();
-                 $newAvatarFilename = self::faker()->slug(2).'.png';
-                 $fs->copy(
-                     __DIR__.'/../../assets/images/'.$user->getAvatar(),
-                     __DIR__.'/../../public/uploads/avatars/'.$newAvatarFilename
-                 );
-                 $user->setAvatar($newAvatarFilename);
-             });
+                $fs = new Filesystem();
+                $newAvatarFilename = self::faker()->slug(2).'.png';
+                $fs->copy(
+                    __DIR__.'/../../assets/images/'.$user->getAvatar(),
+                    __DIR__.'/../../public/uploads/avatars/'.$newAvatarFilename
+                );
+                $user->setAvatar($newAvatarFilename);
+            })
+        ;
     }
 
     protected static function getClass(): string

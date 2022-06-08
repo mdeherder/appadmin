@@ -65,14 +65,24 @@ class DashboardController extends AbstractDashboardController
         return Dashboard::new()
             ->setTitle('Cauldron Overflow Admin')
         ;
+        // $dashboard->getAsDto()->setContentWidth(Crud::LAYOUT_CONTENT_FULL);
     }
 
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-dashboard');
 
-        yield MenuItem::linkToCrud('Questions', 'fas fa-question-circle', Question::class)
-            ->setPermission('ROLE_MODERATOR')
+        yield MenuItem::section('Content');
+
+        yield MenuItem::subMenu('Questions', 'fa fa-question-circle')
+            ->setSubItems([
+                MenuItem::linkToCrud('All', 'fa fa-list', Question::class)
+                    ->setPermission('ROLE_MODERATOR')
+                    ->setController(QuestionCrudController::class),
+                MenuItem::linkToCrud('Pending Approval', 'fa fa-warning', Question::class)
+                    ->setPermission('ROLE_MODERATOR')
+                    ->setController(QuestionPendingApprovalCrudController::class),
+            ])
         ;
 
         yield MenuItem::linkToCrud('Answers', 'fas fa-comments', Answer::class);
@@ -81,7 +91,13 @@ class DashboardController extends AbstractDashboardController
 
         yield MenuItem::linkToCrud('Users', 'fas fa-users', User::class);
 
+        yield MenuItem::section('');
+
         yield MenuItem::linkToUrl('Homepage', 'fas fa-home', $this->generateUrl('app_homepage'));
+
+        yield MenuItem::linkToUrl('StackOverflow', 'fab fa-stack-overflow', 'https://stackoverflow.com')
+            ->setLinkTarget('_blank')
+        ;
     }
 
     public function configureUserMenu(User|UserInterface $user): UserMenu
@@ -110,6 +126,12 @@ class DashboardController extends AbstractDashboardController
     {
         return parent::configureActions()
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->update(Crud::PAGE_DETAIL, Action::EDIT, static function (Action $action) {
+                return $action->setIcon('fa fa-edit');
+            })
+            ->update(Crud::PAGE_DETAIL, Action::INDEX, static function (Action $action) {
+                return $action->setIcon('fa fa-list');
+            })
         ;
     }
 
